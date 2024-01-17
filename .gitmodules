@@ -4,6 +4,9 @@
 [submodule "foundry/lib/aave-v3-core"]
 	path = foundry/lib/aave-v3-core
 	url = https://github.com/aave/aave-v3-core
+[submodule "foundry/lib/ccip"]
+	path = foundry/lib/ccip
+	url = https://github.com/smartcontractkit/ccip
 [submodule "foundry/lib/openzeppelin-contracts"]
 	path = foundry/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
