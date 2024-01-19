@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 interface IGHOPay {
     function topup(address asset, uint256 amount) external payable;
 
-    function pay(address payee, uint256 amount) external;
+    function pay(address payee, uint256 amount, uint256 chain) external;
 
     function repay(uint256 amount) external;
 
