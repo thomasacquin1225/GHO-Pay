@@ -10,3 +10,6 @@
 [submodule "foundry/lib/openzeppelin-contracts"]
 	path = foundry/lib/openzeppelin-contracts
 	url = https://github.com/OpenZeppelin/openzeppelin-contracts
+[submodule "foundry/lib/solidity-bytes-utils"]
+	path = foundry/lib/solidity-bytes-utils
+	url = https://github.com/gnsps/solidity-bytes-utils
