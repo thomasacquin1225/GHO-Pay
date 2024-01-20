@@ -1,7 +1,7 @@
 export const deployedContracts = {
   11155111: {
     GHOPay: {
-      address: "0x4A62D0Fb7c963e7a0e10C9ABA086DF71A6F2A2Bb",
+      address: "0x1D16089138D24a4007Ae367ef30568f964b55041",
       abi: [
         {
           type: "constructor",
@@ -14,7 +14,7 @@ export const deployedContracts = {
             {
               name: "_GhoVariableDebtToken",
               type: "address",
-              internalType: "address",
+              internalType: "contract IVariableDebtToken",
             },
             {
               name: "_wethGateway",
@@ -23,6 +23,16 @@ export const deployedContracts = {
             },
             {
               name: "_GhoToken",
+              type: "address",
+              internalType: "contract IERC20",
+            },
+            {
+              name: "_tokenTransferor",
+              type: "address",
+              internalType: "contract ITokenTransferor",
+            },
+            {
+              name: "_ccipToken",
               type: "address",
               internalType: "contract IERC20",
             },
@@ -48,6 +58,49 @@ export const deployedContracts = {
           inputs: [],
           outputs: [],
           stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "getBorrowAllowance",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "spender",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getGHOBalance",
+          inputs: [
+            {
+              name: "user",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
         },
         {
           type: "function",
@@ -122,8 +175,8 @@ export const deployedContracts = {
             },
             {
               name: "chain",
-              type: "uint256",
-              internalType: "uint256",
+              type: "uint64",
+              internalType: "uint64",
             },
           ],
           outputs: [],
@@ -144,6 +197,32 @@ export const deployedContracts = {
               name: "amount",
               type: "uint256",
               internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setCCIPToken",
+          inputs: [
+            {
+              name: "_ccipToken",
+              type: "address",
+              internalType: "contract IERC20",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setTokenTransferor",
+          inputs: [
+            {
+              name: "_tokenTransferor",
+              type: "address",
+              internalType: "contract ITokenTransferor",
             },
           ],
           outputs: [],
@@ -357,10 +436,13 @@ export const deployedContracts = {
       ],
       inheritedFunctions: {
         approveCreditDelegation: "src/interfaces/IGHOPay.sol",
+        getBorrowAllowance: "src/interfaces/IGHOPay.sol",
+        getGHOBalance: "src/interfaces/IGHOPay.sol",
         getUserAccountData: "src/interfaces/IGHOPay.sol",
         pay: "src/interfaces/IGHOPay.sol",
         repay: "src/interfaces/IGHOPay.sol",
         topup: "src/interfaces/IGHOPay.sol",
+        withdraw: "src/interfaces/IGHOPay.sol",
         owner: "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
         renounceOwnership:
           "lib/openzeppelin-contracts/contracts/access/Ownable.sol",
