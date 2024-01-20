@@ -103,7 +103,7 @@ function main() {
     });
   });
 
-  const TARGET_DIR = "./deployments/";
+  const TARGET_DIR = "../frontend/contracts/";
 
   const fileContent = Object.entries(allGeneratedContracts).reduce(
     (content, [chainId, chainConfig]) => {
