@@ -10,23 +10,23 @@ const Navbar = () => {
       align="center"
       justify="space-between"
       wrap="wrap"
-      // bg="gray.100"
-      padding={5}
+      bg="gray.100"
+      padding={4}
       color="white"
     >
       <Flex align="center" mr={5}>
-        {/* <Image src="/logo.svg" alt="Logo" boxSize="50px" /> */}
-        {/* <Box
-          p={2}
+        <Image src="/logo.svg" alt="Logo" boxSize="50px" />
+        <Box
+          p={3}
           borderRadius="md"
           bg="black"
           color="white"
-          fontSize="lg"
+          fontSize="xl"
           fontWeight="normal"
           fontFamily="Arial, sans-serif"
         >
-          <strong>GHO</strong> pay
-        </Box> */}
+          <strong>GHO</strong> Pay
+        </Box>
       </Flex>
       <Spacer />
       <ConnectKitButton />

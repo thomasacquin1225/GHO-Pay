@@ -15,11 +15,7 @@ export function ConnectWeb3({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={config}>
       <ConnectKitProvider
-        customTheme={{
-          "--ck-border-radius": 42,
-          "--ck-accent-color": "#000000",
-          "--ck-accent-text-color": "#ffffff",
-        }}
+        theme="midnight"
       >
         {children}
       </ConnectKitProvider>
