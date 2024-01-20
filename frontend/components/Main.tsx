@@ -1,6 +1,7 @@
+"use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import {
-  ChakraProvider,
   Box,
   Tab,
   TabList,
@@ -16,13 +17,16 @@ import {
 } from "@chakra-ui/react";
 
 const TabbedForms = () => {
+  const buttonStyle = {
+    width: "full",
+    mt: 4,
+    bg: "black",
+    color: "white",
+  };
+
+  const router = useRouter();
   return (
     <Flex direction="column" height="100vh">
-      {/* <Flex justify="flex-end" p={4}>
-        <Button colorScheme="gray" variant="outline">
-          Connect Wallet
-        </Button>
-      </Flex> */}
       <Flex flex={1} alignItems="center" justifyContent="center" p={4}>
         <Box
           p={4}
@@ -58,8 +62,12 @@ const TabbedForms = () => {
                     <option>Ethereum</option>
                   </Select>
                 </FormControl>
-                <Button width="full" mt={4} bg="black" color="white">
-                  Swap
+                <Button {...buttonStyle}>Swap</Button>
+                <Button
+                  {...buttonStyle}
+                  onClick={() => router.push("/transactions")}
+                >
+                  Transaction History
                 </Button>
               </TabPanel>
               <TabPanel>
@@ -71,8 +79,12 @@ const TabbedForms = () => {
                   <FormLabel>Currency</FormLabel>
                   <Input placeholder="Select cryptocurrency" />
                 </FormControl>
-                <Button width="full" mt={4} bg="black" color="white">
-                  Top Up
+                <Button {...buttonStyle}>Top Up</Button>
+                <Button
+                  {...buttonStyle}
+                  onClick={() => router.push("/transactions")}
+                >
+                  Transaction History
                 </Button>
               </TabPanel>
             </TabPanels>
