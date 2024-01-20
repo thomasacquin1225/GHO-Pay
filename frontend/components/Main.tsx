@@ -71,16 +71,132 @@ const TabbedForms = () => {
     ],
   });
 
+  const pay = useContractWrite({
+      ...deployedContracts[11155111].GHOPay,
+      functionName: 'pay',
+      args: [payee as any, BigInt(amount * 10 ** 18), BigInt(destinationChain)]
+  });
+
+  const repay = useContractWrite({
+    ...deployedContracts[11155111].GHOPay,
+    functionName: 'repay',
+    args: [BigInt(amount * 10 ** 18)]
+  });
+
+  const topup = useContractWrite({
+    ...deployedContracts[11155111].GHOPay,
+    functionName: 'topup',
+    value: BigInt(amount * 10 ** 18),
+    args: ["0x0000000000000000000000000000000000000000" as any, BigInt(amount * 10 ** 18)]
+  });
+
+  const withdraw = useContractWrite({
+    ...deployedContracts[11155111].GHOPay,
+    functionName: 'withdraw',
+    args: [
+      "0x0000000000000000000000000000000000000000" as any, 
+      "0x5b071b590a59395fE4025A0Ccc1FcC931AAc1830" as any, 
+      BigInt(amount * 10 ** 18)
+    ]
+  });
+
   const handlePay = async () => {
     setLoading(true);
-    console.log(result1);
-    toast({
-      title: "Transaction sent",
-      description: "Transaction sent to the bridge",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
+    try {
+      const tx = await pay.writeAsync();
+
+      toast({
+        title: "Transaction successful",
+        description: `Transaction hash: ${tx.hash}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (e) {
+      console.log(e);
+      toast({
+        title: "Transaction failed",
+        description: "Transaction failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleRepay = async () => {
+    setLoading(true);
+    try {
+      const tx = await repay.writeAsync();
+
+      toast({
+        title: "Transaction successful",
+        description: `Transaction hash: ${tx.hash}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (e) {
+      console.log(e);
+      toast({
+        title: "Transaction failed",
+        description: "Transaction failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleTopup = async () => {
+    setLoading(true);
+    try {
+      const tx = await topup.writeAsync();
+
+      toast({
+        title: "Transaction successful",
+        description: `Transaction hash: ${tx.hash}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (e) {
+      console.log(e);
+      toast({
+        title: "Transaction failed",
+        description: "Transaction failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleWithdraw = async () => {
+    setLoading(true);
+    try {
+      const tx = await withdraw.writeAsync();
+
+      toast({
+        title: "Transaction successful",
+        description: `Transaction hash: ${tx.hash}`,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } catch (e) {
+      console.log(e);
+      toast({
+        title: "Transaction failed",
+        description: "Transaction failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
     setLoading(false);
   };
 
@@ -134,13 +250,13 @@ const TabbedForms = () => {
                 <Button isLoading={isLoading} {...buttonStyle} onClick={handlePay}>Pay</Button>
               </TabPanel>
               <TabPanel>
-                {(result1.data as any)[0].status == "success" ?
+                {(result1?.data as any)[0]?.status == "success" ?
                   <>
                     <StatGroup>
                       <Stat>
                         <StatLabel>Available</StatLabel>
                         <StatNumber>
-                          {Number((result1.data as any)[0].result[2]) / 10 ** 8} GHO
+                          {Number((result1?.data as any)[0]?.result[2]) / 10 ** 8} GHO
                         </StatNumber>
                         <StatHelpText>
                           2.02%
@@ -152,7 +268,7 @@ const TabbedForms = () => {
                       <Stat>
                         <StatLabel>Collateral</StatLabel>
                         <StatNumber>
-                          ${(Number((result1.data as any)[0].result[0]) / 10 ** 8).toFixed(2)}
+                          ${(Number((result1?.data as any)[0]?.result[0]) / 10 ** 8).toFixed(2)}
                         </StatNumber>
                         <StatHelpText>
                           0%
@@ -162,7 +278,7 @@ const TabbedForms = () => {
                       <Stat>
                         <StatLabel>Debt</StatLabel>
                         <StatNumber>
-                          {Number((result1.data as any)[0].result[1]) / 10 ** 8} GHO
+                          {Number((result1?.data as any)[0]?.result[1]) / 10 ** 8} GHO
                         </StatNumber>
                         <StatHelpText>
                           2.02%
@@ -184,12 +300,12 @@ const TabbedForms = () => {
                     </InputRightAddon>
                   </InputGroup>
                 </FormControl>
-                <Button {...buttonStyle}>Repay</Button>
+                <Button isLoading={isLoading} {...buttonStyle} onClick={handleRepay}>Repay</Button>
               </TabPanel>
               <TabPanel>
-                {(result1.data as any)[2].status == "success" ?
+                {(result1?.data as any)[2]?.status == "success" ?
                   <Heading as='h4' size='md'>
-                    Collateral: {Number((result1.data as any)[2].result) / 10 ** 8} ETH
+                    Collateral: {Number((result1?.data as any)[2]?.result) / 10 ** 18} ETH
                   </Heading>
                   :
                   <Box>
@@ -207,7 +323,7 @@ const TabbedForms = () => {
                     </Select>
                   </SimpleGrid>
                 </FormControl>
-                <Button {...buttonStyle}>Top-up</Button>
+                <Button isLoading={isLoading} {...buttonStyle} onClick={handleTopup}>Top-up</Button>
                 <FormLabel mt={8}>Withdraw collateral</FormLabel>
                 <FormControl mt={4}>
                   <SimpleGrid columns={2} spacing={5}>
@@ -219,7 +335,7 @@ const TabbedForms = () => {
                     </Select>
                   </SimpleGrid>
                 </FormControl>
-                <Button {...buttonStyle}>Withdraw</Button>
+                <Button isLoading={isLoading} {...buttonStyle} onClick={handleWithdraw}>Withdraw</Button>
               </TabPanel>
             </TabPanels>
           </Tabs>
