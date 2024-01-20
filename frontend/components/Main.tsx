@@ -39,30 +39,32 @@ const TabbedForms = () => {
         >
           <Tabs isFitted variant="enclosed">
             <TabList mb="1em">
-              <Tab>Swap</Tab>
-              <Tab>Top Up</Tab>
+              <Tab>Pay</Tab>
+              <Tab>Top-up</Tab>
+              <Tab>Withdraw</Tab>
             </TabList>
             <TabPanels height="sm">
               <TabPanel>
-                <FormControl>
-                  <FormLabel>From Chain</FormLabel>
-                  <Select placeholder="Select Chain">
-                    <option>Bitcoin</option>
-                    <option>Ethereum</option>
-                  </Select>
+                <FormControl mt={4}>
+                  <FormLabel>To</FormLabel>
+                  <Input placeholder="Enter payee address" />
                 </FormControl>
                 <FormControl mt={4}>
-                  <FormLabel>Address</FormLabel>
-                  <Input placeholder="Enter address" />
+                  <FormLabel>Amount</FormLabel>
+                  <Input placeholder="Enter GHO amount" />
                 </FormControl>
                 <FormControl mt={4}>
-                  <FormLabel>To Chain</FormLabel>
-                  <Select placeholder="Select Chain">
-                    <option>Bitcoin</option>
-                    <option>Ethereum</option>
+                  <FormLabel>Destination chain</FormLabel>
+                  <Select placeholder="Select chain" defaultValue={"16015286601757825753"}>
+                    <option value={"16015286601757825753"}>Sepolia</option>
+                    <option value={"2664363617261496610"}>Optimism Goerli</option>
+                    <option value={"12532609583862916517"}>Mumbai</option>
+                    <option value={"14767482510784806043"}>Fuji</option>
+                    <option value={"5790810961207155433"}>Base Goerli</option>
+                    <option value={"3478487238524512106"}>Arbitrum Sepolia</option>
                   </Select>
                 </FormControl>
-                <Button {...buttonStyle}>Swap</Button>
+                <Button {...buttonStyle}>Pay</Button>
                 <Button
                   {...buttonStyle}
                   onClick={() => router.push("/transactions")}
@@ -71,15 +73,34 @@ const TabbedForms = () => {
                 </Button>
               </TabPanel>
               <TabPanel>
-                <FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Choose collateral</FormLabel>
+                  <Select placeholder="Select collateral asset" defaultValue={"ETH"}>
+                    <option value={"ETH"}>ETH</option>
+                    <option value={"WETH"}>WETH</option>
+                    <option value={"WBTC"}>WBTC</option>
+                  </Select>
+                </FormControl>
+                <FormControl mt={4}>
                   <FormLabel>Amount</FormLabel>
                   <Input placeholder="Enter amount" />
                 </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel>Currency</FormLabel>
-                  <Input placeholder="Select cryptocurrency" />
-                </FormControl>
                 <Button {...buttonStyle}>Top Up</Button>
+              </TabPanel>
+              <TabPanel>
+                <FormControl mt={4}>
+                  <FormLabel>Choose collateral</FormLabel>
+                  <Select placeholder="Select collateral asset" defaultValue={"ETH"}>
+                    <option value={"ETH"}>ETH</option>
+                    <option value={"WETH"}>WETH</option>
+                    <option value={"WBTC"}>WBTC</option>
+                  </Select>
+                </FormControl>
+                <FormControl mt={4}>
+                  <FormLabel>Amount</FormLabel>
+                  <Input placeholder="Enter amount" />
+                </FormControl>
+                <Button {...buttonStyle}>Withdraw</Button>
                 <Button
                   {...buttonStyle}
                   onClick={() => router.push("/transactions")}

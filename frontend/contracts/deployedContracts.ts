@@ -1,7 +1,7 @@
 export const deployedContracts = {
   11155111: {
     GHOPay: {
-      address: "0x50ad9D35A4a3C95086C2904358AeEA8b5e943229",
+      address: "0x1D16089138D24a4007Ae367ef30568f964b55041",
       abi: [
         {
           type: "constructor",
@@ -70,6 +70,25 @@ export const deployedContracts = {
             },
             {
               name: "spender",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getDepositedETH",
+          inputs: [
+            {
+              name: "user",
               type: "address",
               internalType: "address",
             },

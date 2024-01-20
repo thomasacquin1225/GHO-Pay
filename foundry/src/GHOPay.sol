@@ -14,12 +14,12 @@ import "./interfaces/ITokenTransferor.sol";
 contract GHOPay is IGHOPay, Ownable {
     IPoolAddressesProvider immutable poolProvider;
     IVariableDebtToken immutable GhoVariableDebtToken;
+    uint64 immutable CHAIN_SELECTOR = 16015286601757825753;
 
     IWrappedTokenGatewayV3 wethGateway;
     IERC20 ccipToken;
     ITokenTransferor tokenTransferor;
-
-    uint64 immutable CHAIN_SELECTOR = 16015286601757825753;
+    mapping(address => uint256) depositedETH;
 
     IERC20 public immutable GhoToken;
 
@@ -52,6 +52,7 @@ contract GHOPay is IGHOPay, Ownable {
         IPool pool = IPool(poolProvider.getPool());        
         if (asset == address(0)) {
             wethGateway.depositETH{value: amount}(address(pool), msg.sender, 0);
+            depositedETH[msg.sender] += amount;
         } else {
             IERC20 token = IERC20(asset);
             token.transferFrom(msg.sender, address(this), amount);
@@ -63,8 +64,12 @@ contract GHOPay is IGHOPay, Ownable {
 
     function pay(address payee, uint256 amount, uint64 chain) external {
         require(amount > 0, "Invalid amount");
-        require(msg.sender != address(0), "Invalid payee");
+        require(payee != address(0), "Invalid payee");
         require(msg.sender != payee, "Invalid payee");
+        require(
+            getBorrowAllowance(msg.sender, address(this)) >= amount,
+            "Insufficient borrow allowance"
+        );
 
         IPool pool = IPool(poolProvider.getPool());
         pool.borrow(
@@ -110,6 +115,7 @@ contract GHOPay is IGHOPay, Ownable {
         if (asset == address(0)) {
             IERC20(aToken).approve(address(wethGateway), amount);
             wethGateway.withdrawETH(address(pool), amount, msg.sender);
+            depositedETH[msg.sender] -= amount;
         } else {
             IERC20(aToken).approve(address(pool), amount);
             pool.withdraw(asset, amount, msg.sender);
@@ -147,6 +153,10 @@ contract GHOPay is IGHOPay, Ownable {
 
     function getGHOBalance(address user) public view returns (uint256) {
         return GhoToken.balanceOf(user);
+    }
+
+    function getDepositedETH(address user) public view returns (uint256) {
+        return depositedETH[user];
     }
 
     function getUserAccountData(address user) public view 
