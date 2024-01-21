@@ -29,7 +29,8 @@ import {
 import { 
   useAccount,
   useContractReads,
-  useContractWrite 
+  useContractWrite,
+  useSignTypedData 
 } from 'wagmi';
 import { createClient } from '@supabase/supabase-js';
 import { deployedContracts } from "@/contracts/deployedContracts";
@@ -58,6 +59,7 @@ const TabbedForms = () => {
   const [collateral, setCollateral] = useState<string>("ETH");
 
   const account = useAccount();
+  const { signTypedData } = useSignTypedData();
   const result1 = useContractReads({
     contracts: [
       {
@@ -243,174 +245,222 @@ const TabbedForms = () => {
 
   if (!mounted) return <></>;
   return (
-    <Flex direction="column" height="100vh">
-      <Flex flex={1} alignItems="center" justifyContent="center" p={4}>
-        <Box
-          p={4}
-          boxShadow="md"
-          bg="white"
-          borderRadius="xl"
-          minW={{ base: "90%", sm: "lg" }}
-          w="full"
-          maxW="xl"
-        >
-          <Tabs isFitted variant="enclosed">
-            <TabList mb="1em">
-              <Tab>Pay</Tab>
-              <Tab>Wallet</Tab>
-              <Tab>Collateral</Tab>
-            </TabList>
-            <TabPanels height="sm">
-              <TabPanel>
-                <FormControl>
-                  <FormLabel>To</FormLabel>
-                  <Input placeholder="Enter payee address" onChange={(e) => setPayee(e.target.value)} />
-                </FormControl>
-                <FormControl mt={4}>
-                  <FormLabel>Amount</FormLabel>
-                  <InputGroup>
-                    <Input placeholder='Enter GHO amount' onChange={(e) => setAmount(e.target.value)} />
-                    <InputRightAddon>
-                      <Image src="/gho.svg" boxSize="30px" /> &nbsp; GHO
-                    </InputRightAddon>
-                  </InputGroup>
-                </FormControl>
-                <FormControl mt={4} mb={4}>
-                  <FormLabel>Destination chain</FormLabel>
-                  <Select placeholder="Select chain" onChange={(e) => setDestinationChain(e.target.value)}>
-                    <option value={"16015286601757825753"}>Ethereum Sepolia</option>
-                    <option value={"2664363617261496610"}>Optimism Goerli</option>
-                    <option value={"12532609583862916517"}>Polygon Mumbai</option>
-                    <option value={"14767482510784806043"}>Avalanche Fuji</option>
-                    <option value={"5790810961207155433"}>Base Goerli</option>
-                    <option value={"3478487238524512106"}>Arbitrum Sepolia</option>
-                  </Select>
-                </FormControl>
-                <Button isLoading={isLoading} {...buttonStyle} onClick={handlePay}>Pay</Button>
-              </TabPanel>
-              <TabPanel>
-                {result1?.data &&
-                  <>
-                  {(result1?.data as any)[0]?.status == "success" ?
+    <>
+      <Flex direction="column" height="100vh">
+        <Flex flex={1} alignItems="center" justifyContent="center" p={4}>
+          <Box
+            p={4}
+            boxShadow="md"
+            bg="white"
+            borderRadius="xl"
+            minW={{ base: "90%", sm: "lg" }}
+            w="full"
+            maxW="xl"
+          >
+            <Tabs isFitted variant="enclosed">
+              <TabList mb="1em">
+                <Tab>Pay</Tab>
+                <Tab>Wallet</Tab>
+                <Tab>Collateral</Tab>
+              </TabList>
+              <TabPanels height="sm">
+                <TabPanel>
+                  <FormControl>
+                    <FormLabel>To</FormLabel>
+                    <Input placeholder="Enter payee address" onChange={(e) => setPayee(e.target.value)} />
+                  </FormControl>
+                  <FormControl mt={4}>
+                    <FormLabel>Amount</FormLabel>
+                    <InputGroup>
+                      <Input placeholder='Enter GHO amount' onChange={(e) => setAmount(e.target.value)} />
+                      <InputRightAddon>
+                        <Image src="/gho.svg" boxSize="30px" /> &nbsp; GHO
+                      </InputRightAddon>
+                    </InputGroup>
+                  </FormControl>
+                  <FormControl mt={4} mb={4}>
+                    <FormLabel>Destination chain</FormLabel>
+                    <Select placeholder="Select chain" onChange={(e) => setDestinationChain(e.target.value)}>
+                      <option value={"16015286601757825753"}>Ethereum Sepolia</option>
+                      <option value={"2664363617261496610"}>Optimism Goerli</option>
+                      <option value={"12532609583862916517"}>Polygon Mumbai</option>
+                      <option value={"14767482510784806043"}>Avalanche Fuji</option>
+                      <option value={"5790810961207155433"}>Base Goerli</option>
+                      <option value={"3478487238524512106"}>Arbitrum Sepolia</option>
+                    </Select>
+                  </FormControl>
+                  <Button isLoading={isLoading} {...buttonStyle} onClick={handlePay}>Pay</Button>
+                </TabPanel>
+                <TabPanel>
+                  {result1?.data &&
                     <>
-                      <StatGroup>
-                        <Stat>
-                          <StatLabel>Available for borrow & pay</StatLabel>
-                          <StatNumber>
-                            <Flex as='h4' align='center'>
-                              <Heading size='lg' mr="3">
-                                {(Number((result1?.data as any)[0]?.result[2]) / 10 ** 8).toFixed(2)}
-                              </Heading>
-                              <Image src="/gho.svg" boxSize="30px" mr="1" />
-                              <Heading size='lg'>
-                                GHO
-                              </Heading>
-                            </Flex>
-                          </StatNumber>
-                          <StatHelpText>
-                            2.02%
-                          </StatHelpText>
-                        </Stat>
-                      </StatGroup>
-                      <br/>
-                      <StatGroup>
-                        <Stat>
-                          <StatLabel>Total Collateral</StatLabel>
-                          <StatNumber>
-                            ${(Number((result1?.data as any)[0]?.result[0]) / 10 ** 8).toFixed(2)}
-                          </StatNumber>
-                          <StatHelpText>
-                            0%
-                          </StatHelpText>
-                        </Stat>
+                    {(result1?.data as any)[0]?.status == "success" ?
+                      <>
+                        <StatGroup>
+                          <Stat>
+                            <StatLabel>Available for borrow & pay</StatLabel>
+                            <StatNumber>
+                              <Flex as='h4' align='center'>
+                                <Heading size='lg' mr="3">
+                                  {(Number((result1?.data as any)[0]?.result[2]) / 10 ** 8).toFixed(2)}
+                                </Heading>
+                                <Image src="/gho.svg" boxSize="30px" mr="1" />
+                                <Heading size='lg'>
+                                  GHO
+                                </Heading>
+                              </Flex>
+                            </StatNumber>
+                            <StatHelpText>
+                              2.02%
+                            </StatHelpText>
+                          </Stat>
+                        </StatGroup>
+                        <br/>
+                        <StatGroup>
+                          <Stat>
+                            <StatLabel>Total Collateral</StatLabel>
+                            <StatNumber>
+                              ${(Number((result1?.data as any)[0]?.result[0]) / 10 ** 8).toFixed(2)}
+                            </StatNumber>
+                            <StatHelpText>
+                              0%
+                            </StatHelpText>
+                          </Stat>
 
-                        <Stat>
-                          <StatLabel>Debt</StatLabel>
-                          <StatNumber>
-                            {(Number((result1?.data as any)[0]?.result[1]) / 10 ** 8).toFixed(2)} GHO
-                          </StatNumber>
-                          <StatHelpText>
-                            2.02%
-                          </StatHelpText>
-                        </Stat>
-                      </StatGroup>
+                          <Stat>
+                            <StatLabel>Debt</StatLabel>
+                            <StatNumber>
+                              {(Number((result1?.data as any)[0]?.result[1]) / 10 ** 8).toFixed(2)} GHO
+                            </StatNumber>
+                            <StatHelpText>
+                              2.02%
+                            </StatHelpText>
+                          </Stat>
+                        </StatGroup>
+                      </>
+                      :
+                      <Box>
+                        <p>Not connected</p>
+                      </Box>
+                    }
                     </>
-                    :
-                    <Box>
-                      <p>Not connected</p>
-                    </Box>
                   }
-                  </>
-                }
-                <FormControl mt={8}>
-                  <FormLabel>Repay Debt</FormLabel>
-                  <InputGroup>
-                    <Input placeholder='Enter GHO amount' onChange={(e) => setAmount(e.target.value)} />
-                    <InputRightAddon>
-                      <Image src="/gho.svg" boxSize="30px" /> &nbsp; GHO
-                    </InputRightAddon>
-                  </InputGroup>
-                </FormControl>
-                <Button isLoading={isLoading} {...buttonStyle} onClick={handleRepay}>Repay</Button>
-              </TabPanel>
-              <TabPanel>
-                {result1?.data &&
-                  <>
-                  {(result1?.data as any)[2]?.status == "success" ?
-                    <Flex as='h4' align='center'>
-                      <Heading size='md' mr="2">
-                        Collateral: &nbsp; {Number((result1?.data as any)[2]?.result) / 10 ** 18}
-                      </Heading>
-                      <Image src="/weth.svg" boxSize="30px" mr="2" />
-                      <Heading size='md'>
-                        WETH
-                      </Heading>
-                    </Flex>
-                    :
-                    <Box>
-                      <p>Not connected</p>
-                    </Box>
+                  <FormControl mt={8}>
+                    <FormLabel>Repay Debt</FormLabel>
+                    <InputGroup>
+                      <Input placeholder='Enter GHO amount' onChange={(e) => setAmount(e.target.value)} />
+                      <InputRightAddon>
+                        <Image src="/gho.svg" boxSize="30px" /> &nbsp; GHO
+                      </InputRightAddon>
+                    </InputGroup>
+                  </FormControl>
+                  <Button isLoading={isLoading} {...buttonStyle} onClick={handleRepay}>Repay</Button>
+                </TabPanel>
+                <TabPanel>
+                  {result1?.data &&
+                    <>
+                    {(result1?.data as any)[2]?.status == "success" ?
+                      <Flex as='h4' align='center'>
+                        <Heading size='md' mr="2">
+                          Collateral: &nbsp; {Number((result1?.data as any)[2]?.result) / 10 ** 18}
+                        </Heading>
+                        <Image src="/weth.svg" boxSize="30px" mr="2" />
+                        <Heading size='md'>
+                          WETH
+                        </Heading>
+                      </Flex>
+                      :
+                      <Box>
+                        <p>Not connected</p>
+                      </Box>
+                    }
+                    </>
                   }
-                  </>
-                }
-                <FormLabel mt={6}>Add collateral</FormLabel>
-                <FormControl mt={4}>
-                  <SimpleGrid columns={2} spacing={5}>
-                    <Input placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
-                    <Select placeholder="Select collateral asset" defaultValue={"ETH"} onChange={(e) => setCollateral(e.target.value)}>
-                      <option value={"ETH"}>ETH</option>
-                      <option value={"WETH"}>WETH</option>
-                      <option value={"WBTC"}>WBTC</option>
-                    </Select>
-                  </SimpleGrid>
-                </FormControl>
-                <Button isLoading={isLoading} {...buttonStyle} onClick={handleTopup}>Top-up</Button>
-                <FormLabel mt={8}>Withdraw collateral</FormLabel>
-                <FormControl mt={4}>
-                  <SimpleGrid columns={2} spacing={5}>
-                    <Input placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
-                    <Select placeholder="Select collateral asset" defaultValue={"ETH"} onChange={(e) => setCollateral(e.target.value)}>
-                      <option value={"ETH"}>ETH</option>
-                      <option value={"WETH"}>WETH</option>
-                      <option value={"WBTC"}>WBTC</option>
-                    </Select>
-                  </SimpleGrid>
-                </FormControl>
-                <Button isLoading={isLoading} {...buttonStyle} onClick={handleWithdraw}>Withdraw</Button>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </Box>
+                  <FormLabel mt={6}>Add collateral</FormLabel>
+                  <FormControl mt={4}>
+                    <SimpleGrid columns={2} spacing={5}>
+                      <Input placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
+                      <Select placeholder="Select collateral asset" defaultValue={"ETH"} onChange={(e) => setCollateral(e.target.value)}>
+                        <option value={"ETH"}>ETH</option>
+                        <option value={"WETH"}>WETH</option>
+                        <option value={"WBTC"}>WBTC</option>
+                      </Select>
+                    </SimpleGrid>
+                  </FormControl>
+                  <Button isLoading={isLoading} {...buttonStyle} onClick={handleTopup}>Top-up</Button>
+                  <FormLabel mt={8}>Withdraw collateral</FormLabel>
+                  <FormControl mt={4}>
+                    <SimpleGrid columns={2} spacing={5}>
+                      <Input placeholder="Enter amount" onChange={(e) => setAmount(e.target.value)} />
+                      <Select placeholder="Select collateral asset" defaultValue={"ETH"} onChange={(e) => setCollateral(e.target.value)}>
+                        <option value={"ETH"}>ETH</option>
+                        <option value={"WETH"}>WETH</option>
+                        <option value={"WBTC"}>WBTC</option>
+                      </Select>
+                    </SimpleGrid>
+                  </FormControl>
+                  <Button isLoading={isLoading} {...buttonStyle} onClick={handleWithdraw}>Withdraw</Button>
+                </TabPanel>
+              </TabPanels>
+            </Tabs>
+          </Box>
+        </Flex>
       </Flex>
       {account.isConnected &&
-          <Button
-            {...buttonStyle}
-            onClick={() => router.push("/transactions")}
-          >
-            Transaction History
-          </Button>
+      <Flex flex={1} alignItems="center" justifyContent="center" p={4}>
+        <Button {...buttonStyle} ml={4}mr={4}
+          onClick={() =>
+            signTypedData({
+              types: {
+                Permit: [{
+                  name: "owner",
+                  type: "address"
+                },
+                {
+                  name: "spender",
+                  type: "address"
+                },
+                {
+                  name: "value",
+                  type: "uint256"
+                },
+                {
+                  name: "nonce",
+                  type: "uint256"
+                },
+                {
+                  name: "deadline",
+                  type: "uint256"
+                },
+              ],
+              },
+              domain: {
+                name: "Aave Variable Debt Sepolia GHO",
+                version: "1",
+                chainId: 11155111,
+                verifyingContract: "0x67ae46EF043F7A4508BD1d6B94DB6c33F0915844",
+              },
+              primaryType: "Permit",
+              message: {
+                owner: account.address,
+                spender: "0x1D16089138D24a4007Ae367ef30568f964b55041",
+                value: BigInt(parseFloat("1000000000") * 10 ** 18),
+                nonce: 5,
+                deadline: new Date().getTime() + 1000 * 60 * 60 * 24,
+              }
+            }
+          )}
+        >
+          Approve Credit Delegation
+        </Button>
+        <Button {...buttonStyle} ml={4}mr={4}
+          onClick={() => router.push("/transactions")}
+        >
+          Transaction History
+        </Button>
+      </Flex>
       }
-    </Flex>
+    </>
   );
 };
 
