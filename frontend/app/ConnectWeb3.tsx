@@ -14,11 +14,7 @@ const config = createConfig(
 export function ConnectWeb3({ children }: { children: React.ReactNode }) {
   return (
     <WagmiConfig config={config}>
-      <ConnectKitProvider
-        theme="midnight"
-      >
-        {children}
-      </ConnectKitProvider>
+      <ConnectKitProvider theme="soft">{children}</ConnectKitProvider>
     </WagmiConfig>
   );
 }
