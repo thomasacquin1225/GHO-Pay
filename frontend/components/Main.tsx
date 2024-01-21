@@ -26,6 +26,7 @@ import {
   Heading,
   Image,
   Spacer,
+  Divider,
 } from "@chakra-ui/react";
 import {
   useAccount,
@@ -38,8 +39,8 @@ import { deployedContracts } from "@/contracts/deployedContracts";
 
 const TabbedForms = () => {
   const buttonStyle = {
-    width: "full",
-    mt: 4,
+    width: "600px",
+    mt: 2,
     bg: "black",
     color: "white",
   };
@@ -497,6 +498,7 @@ const TabbedForms = () => {
           </Box>
         </Box>
       </Flex>
+      <Divider mt={2} />
       {account.isConnected && (
         <Flex flex={1} alignItems="center" justifyContent="center" p={4}>
           <Button
@@ -548,14 +550,6 @@ const TabbedForms = () => {
             }
           >
             Approve Credit Delegation
-          </Button>
-          <Button
-            {...buttonStyle}
-            ml={4}
-            mr={4}
-            onClick={() => router.push("/transactions")}
-          >
-            Transaction History
           </Button>
         </Flex>
       )}
