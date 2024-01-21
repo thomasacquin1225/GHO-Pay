@@ -60,6 +60,7 @@ const TabbedForms = () => {
     "16015286601757825753"
   );
   const [collateral, setCollateral] = useState<string>("ETH");
+  const [maxBorrow, setMaxBorrow] = useState<string>("0.00");
 
   const account = useAccount();
   const { signTypedData } = useSignTypedData();
@@ -251,6 +252,17 @@ const TabbedForms = () => {
 
   useEffect(() => {
     setMounted(true);
+    if (result1?.data) {
+      if ((result1?.data as any)[0]?.status == "success") {
+        setMaxBorrow(
+          (
+            Number((result1?.data as any)[0]?.result[2]) /
+            10 ** 8 /
+            2
+          ).toFixed(2)
+        );
+      }
+    }
   }, []);
 
   if (!mounted) return <></>;
@@ -286,7 +298,9 @@ const TabbedForms = () => {
                     />
                   </FormControl>
                   <FormControl mt={4}>
-                    <FormLabel>Amount</FormLabel>
+                    <FormLabel>
+                      Amount (Max: {maxBorrow} GHO)
+                    </FormLabel>
                     <InputGroup>
                       <Input
                         placeholder="Enter GHO amount"
@@ -303,6 +317,7 @@ const TabbedForms = () => {
                     </FormLabel>
                     <Select
                       placeholder="Select chain"
+                      defaultValue={"16015286601757825753"}
                       onChange={(e) => setDestinationChain(e.target.value)}
                     >
                       <option value={"16015286601757825753"}>
