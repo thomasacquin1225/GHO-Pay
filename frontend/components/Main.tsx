@@ -28,6 +28,8 @@ import {
   Spacer,
   Divider,
 } from "@chakra-ui/react";
+import { sendPaymentOperation } from "../accountKit";
+
 import {
   useAccount,
   useContractReads,
@@ -123,8 +125,6 @@ const TabbedForms = () => {
   const handlePay = async () => {
     setLoading(true);
     try {
-      const tx = await pay.writeAsync();
-
       const created_at = new Date().toISOString();
       let destination = "Ethereum Sepolia";
       if (destinationChain == "2664363617261496610") {
@@ -138,11 +138,18 @@ const TabbedForms = () => {
       } else if (destinationChain == "3478487238524512106") {
         destination = "Arbitrum Sepolia";
       }
+      const txHash = await sendPaymentOperation({
+        apiKey: "XMV7KckmkY8h8QAoTqX9Xr0q9zC4fhC0",
+        privateKey:
+          "fbf992b0e25ad29c85aae3d69fcb7f09240dd2588ecee449a4934b9e499102cc",
+        args: [payee, amount, destinationChain],
+        policyId: "d957a568-8392-4c56-82ed-224245e8f5e2",
+      });
 
       const { data, error } = await supabase.from("transactions").insert([
         {
           user: account.address,
-          txhash: tx.hash,
+          txhash: txHash,
           payee,
           amount: parseFloat(amount),
           source: "Ethereum Sepolia",
@@ -157,7 +164,7 @@ const TabbedForms = () => {
 
       toast({
         title: "Transaction successful",
-        description: `Transaction hash: ${tx.hash}`,
+        description: `Transaction hash: ${txHash}`,
         status: "success",
         duration: 5000,
         isClosable: true,
@@ -255,11 +262,9 @@ const TabbedForms = () => {
     if (result1?.data) {
       if ((result1?.data as any)[0]?.status == "success") {
         setMaxBorrow(
-          (
-            Number((result1?.data as any)[0]?.result[2]) /
-            10 ** 8 /
+          (Number((result1?.data as any)[0]?.result[2]) / 10 ** 8 / 2).toFixed(
             2
-          ).toFixed(2)
+          )
         );
       }
     }
@@ -298,9 +303,7 @@ const TabbedForms = () => {
                     />
                   </FormControl>
                   <FormControl mt={4}>
-                    <FormLabel>
-                      Amount (Max: {maxBorrow} GHO)
-                    </FormLabel>
+                    <FormLabel>Amount (Max: {maxBorrow} GHO)</FormLabel>
                     <InputGroup>
                       <Input
                         placeholder="Enter GHO amount"
